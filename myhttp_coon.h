@@ -145,7 +145,7 @@ bool http_coon:: bad_respond(){ //400
 	strcpy(path_400, "bad_respond.html");
 	url = path_400;
 	bzero(filename, sizeof(filename));
-	sprintf(filename, "../html/%s", url);
+	sprintf(filename, "%s", url);
 	struct stat my_file;
 	if(stat(filename, &my_file) < 0){
 		cout << "文件不存在！！\n";
@@ -159,7 +159,7 @@ bool http_coon :: forbidden_respond(){ //403
 	strcpy(path_403, "forbiden_respond.html");
 	url = path_403;
 	bzero(filename, sizeof(filename));
-	sprintf(filename, "../html/%s", url);
+	sprintf(filename, "%s", url);
 	struct stat my_file;
 	if(stat(filename, &my_file)<0){
 		cout << "失败\n" ; 
@@ -174,7 +174,7 @@ bool http_coon :: not_found_request(){ // 404
 	bzero(url, strlen(url));
 	strcpy(url, "not_found_request.html");
 	bzero(filename, sizeof(filename));
-	sprintf(filename, "../html/%s", url);
+	sprintf(filename, "%s", url);
 	struct stat my_file;
 	if(stat(filename, &my_file) < 0){
 		cout << "404!!" <<endl;
@@ -220,7 +220,7 @@ bool http_coon::judge_line(int &check_index, int &read_buf_len){
 	char ch;
 	for( ; check_index < read_buf_len; ++check_index){
 		ch = read_buf[check_index];
-		/*if(ch == '\r'){
+		if(ch == '\r'){
 			if(check_index == read_buf_len){
 				return false;
 			}
@@ -231,9 +231,9 @@ bool http_coon::judge_line(int &check_index, int &read_buf_len){
 		if(ch == '\n') {
 			return false;
 		
-		}*/
+		}
 
-        if(ch == '\r' && check_index+1<read_buf_len && read_buf[check_index+1]=='\n')
+      /*  if(ch == '\r' && check_index+1<read_buf_len && read_buf[check_index+1]=='\n')
         {
             read_buf[check_index++] = '\0';
             read_buf[check_index++] = '\0';
@@ -254,7 +254,7 @@ bool http_coon::judge_line(int &check_index, int &read_buf_len){
             else{
                 return 0;
 			}
-		}
+		}*/
 	}
 	return false;	
 }
@@ -298,12 +298,12 @@ http_coon:: HTTP_CODE http_coon::requestion_analyse(char *temp){
 		return BAD_REQUESTION;
 	}
 	status = HEAD;
-	
 	return NO_REQUESTION;
 }
 
 
 http_coon::HTTP_CODE http_coon::head_analyse(char *temp){
+	cout << "mmp" << endl;
 	if(temp[0] =='\0'){
 		return GET_REQUESTION;
 	}
@@ -334,6 +334,7 @@ http_coon::HTTP_CODE http_coon::head_analyse(char *temp){
 	else{
 		cout << "can't handle it's hand\n";
 	}
+	cout << "nommp" << endl;
 	return NO_REQUESTION;
 }
 
@@ -346,7 +347,7 @@ http_coon :: HTTP_CODE http_coon:: do_get(){ // GET方法请求 ，分析该请�
 		return DYNAMIC_FILE;
 	}
 	else {
-		sprintf(filename, "../html%s", url);
+		sprintf(filename, ".%s", url);
 		struct stat my_file_stat;
 		if(stat(filename, &my_file_stat) < 0) { //文件打不开
 			return NOT_FOUND; // 404
@@ -364,7 +365,7 @@ http_coon :: HTTP_CODE http_coon:: do_get(){ // GET方法请求 ，分析该请�
 
 
 http_coon :: HTTP_CODE http_coon :: do_post(){
-	sprintf(filename, "..%s", url);
+	sprintf(filename, "%s", url);
 	int star = read_buf_len - m_http_count;
 	argv = post_buf + star;
 	argv[strlen(argv) +1 ] = '\0';
@@ -479,6 +480,7 @@ bool http_coon :: mywrite(){
 	}
 	else {
 		int fd = open(filename, O_RDONLY);
+		cout << "***filename = " << filename << endl;
 		assert(fd != -1);
 		int ret = send(client_fd, request_head_buf, strlen(request_head_buf), 0);
 		if(ret < 0){
